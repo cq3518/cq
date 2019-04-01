@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.cq.mapper.TbUserMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.example.demo.cq.entity.TbUser">
+        <id column="id" property="id" />
+        <result column="username" property="username" />
+        <result column="age" property="age" />
+        <result column="ctm" property="ctm" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, username, age, ctm
+    </sql>
+    <select id="findAll" parameterType="tbUser" resultType="tbUser">
+        select
+         <include refid="Base_Column_List" />
+         from tb_user
+        where 1=1
+        <if test="username !=null and username!=''">
+            and username like '${username}'
+        </if>
+        <if test="age !=null and age!=''">
+            and age =#{username}
+        </if>
+
+    </select>
+    <select id="findAllOne" resultType="tbUser">
+        select
+         <include refid="Base_Column_List" />
+         from tb_user
+
+    </select>
+
+</mapper>
