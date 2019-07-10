@@ -68,7 +68,7 @@ public class MybatisGenerator {
 
         // 数据源配置
         DataSourceConfig dsc = new DataSourceConfig();
-        dsc.setUrl("jdbc:mysql://localhost:3306/redis_cq?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8");
+        dsc.setUrl("jdbc:mysql://localhost:3306/test?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8");
         dsc.setDriverName("com.mysql.jdbc.Driver");
         dsc.setUsername("root");
         dsc.setPassword("123456");
@@ -123,7 +123,7 @@ public class MybatisGenerator {
         strategy.setRestControllerStyle(true);
         strategy.setInclude(scanner("表名"));
         strategy.setControllerMappingHyphenStyle(true);
-        strategy.setTablePrefix("t_");
+        //strategy.setTablePrefix("t_");
         mpg.setStrategy(strategy);
         mpg.setTemplateEngine(new FreemarkerTemplateEngine());
         mpg.execute();

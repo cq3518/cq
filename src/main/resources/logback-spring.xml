@@ -1,112 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  ~ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
-  ~ Copyright (c) 2012-2018. haiyi Inc.
-  ~ i2_trade All rights reserved.
-  -->
+<configuration>
 
-<configuration debug="false">
-    <!--定义日志文件的存储地址 勿在 LogBack 的配置中使用相对路径 -->
-    <contextName>i2</contextName>
-    <!-- 此xml在spring-boot.RELEASE.jar里 -->
-    <include resource="org/springframework/boot/logging/logback/defaults.xml" />
-    <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
-    <!-- 开启后可以通过jmx动态控制日志级别(springboot Admin的功能) -->
-    <!--<jmxConfigurator/>-->
+    <property name="log_dir" value="logs" />
+    <property name="maxFileSize" value="500MB" />
+    <property name="maxHistory" value="30" />
 
     <!-- 控制台输出 -->
-    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符 -->
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{traceId}] [%thread] %-5level %logger{50}:%line - %msg%n</pattern>
-            <!--<pattern>%msg%n</pattern>-->
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
+            <pattern>%date{yyyy-MM-dd HH:mm:ss} | %highlight(%-5level) | %boldGreen(%logger) | %msg%n</pattern>
         </encoder>
-        <!--<encoder class="net.logstash.logback.encoder.LogstashEncoder">
-            <encoding>UTF-8</encoding>
-        </encoder>-->
-        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>INFO</level>
-            <!--<onMatch>ACCEPT</onMatch>-->
-            <!--<onMismatch>DENY</onMismatch>-->
-        </filter>
     </appender>
 
-    <!-- 按照每天生成日志文件 -->
-    <appender name="ERROR"  class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <!-- info日志 appender  -->
+    <appender name="INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!--日志文件输出的文件名-->
-            <FileNamePattern>${LOG_PATH}/HYi2.error.log.%d{yyyy-MM-dd}.log</FileNamePattern>
-            <!--日志文件保留天数-->
-            <MaxHistory>30</MaxHistory>
+            <!-- 按天回滚 daily -->
+            <fileNamePattern>${log_dir}/log-info-%d{yyyy-MM-dd}-%i.log</fileNamePattern>
+            <!-- 日志最大的历史 30天 -->
+            <maxHistory>${maxHistory}</maxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!-- maxFileSize:这是活动文件的大小，默认值是10MB，这里设置为500MB -->
+                <maxFileSize>${maxFileSize}</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
         </rollingPolicy>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{traceId}] [%thread] %-5level %logger{50} - %msg%n</pattern>
+            <pattern>%date{yyyy-MM-dd HH:mm:ss} | %highlight(%-5level) | %boldYellow(%thread) | %boldGreen(%logger) | %msg%n</pattern>
         </encoder>
-        <!--日志文件最大的大小-->
-        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-            <MaxFileSize>10MB</MaxFileSize>
-        </triggeringPolicy>
-        <filter class="ch.qos.logback.classic.filter.LevelFilter"><!-- 只打印错误日志 -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <!-- 只打印info日志 -->
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+    <!-- 出错日志 appender  -->
+    <appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 按天回滚 daily -->
+            <fileNamePattern>${log_dir}/log-error-%d{yyyy-MM-dd}-%i.log</fileNamePattern>
+            <!-- 日志最大的历史 30天 -->
+            <maxHistory>${maxHistory}</maxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!-- maxFileSize:这是活动文件的大小，默认值是10MB，这里设置为500MB -->
+                <maxFileSize>${maxFileSize}</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
+            <pattern>%date{yyyy-MM-dd HH:mm:ss} | %highlight(%-5level) | %boldYellow(%thread) | %boldGreen(%logger) | %msg%n</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <!-- 只打印错误日志 -->
             <level>ERROR</level>
             <onMatch>ACCEPT</onMatch>
             <onMismatch>DENY</onMismatch>
         </filter>
     </appender>
 
-    <appender name="INFO"  class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!--日志文件输出的文件名-->
-            <FileNamePattern>${LOG_PATH}/HYi2.info.log.%d{yyyy-MM-dd}.log</FileNamePattern>
-            <!--日志文件保留天数-->
-            <MaxHistory>30</MaxHistory>
-        </rollingPolicy>
-        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{traceId}] [%thread] %-5level %logger{50} - %msg%n</pattern>
-        </encoder>
-        <!--日志文件最大的大小-->
-        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-            <MaxFileSize>10MB</MaxFileSize>
-        </triggeringPolicy>
+    <!--mybatis sql日志 日志的级别需要是DEBUG-->
+    <!--日志打印的包的范围，及分类日志文件存储 -->
+    <logger name="com.example.*.mapper" level="DEBUG" additivity="true"></logger>
 
-        <filter class="ch.qos.logback.classic.filter.LevelFilter"><!-- 只打印INFO日志 -->
-            <level>INFO</level>
-            <onMatch>ACCEPT</onMatch>
-            <onMismatch>DENY</onMismatch>
-        </filter>
-    </appender>
-
-    <appender name="DEBUG"  class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!--日志文件输出的文件名-->
-            <FileNamePattern>${LOG_PATH}/HYi2.debug.log.%d{yyyy-MM-dd}.log</FileNamePattern>
-            <!--日志文件保留天数-->
-            <MaxHistory>30</MaxHistory>
-        </rollingPolicy>
-        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{traceId}] [%thread] %-5level %logger{50} - %msg%n</pattern>
-        </encoder>
-        <!--日志文件最大的大小-->
-        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-            <MaxFileSize>10MB</MaxFileSize>
-        </triggeringPolicy>
-
-        <filter class="ch.qos.logback.classic.filter.LevelFilter"><!-- 只打印DEBUG日志 -->
-            <level>DEBUG</level>
-            <onMatch>ACCEPT</onMatch>
-            <onMismatch>DENY</onMismatch>
-        </filter>
-    </appender>
-
-
-    <!-- 日志输出级别 -->
-    <root level="INFO">
-        <!-- <appender-ref ref="CONSOLE"/>-->
-        <appender-ref ref="stdout" />
-        <!--<appender-ref ref="ERROR" />-->
-        <!--<appender-ref ref="INFO" />-->
-        <!--<appender-ref ref="DEBUG" />-->
+    <!--控制台和日志文件输出级别-->
+    <root level="INFO" additivity = "false">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="INFO" />
+        <appender-ref ref="ERROR" />
     </root>
+
 </configuration>
